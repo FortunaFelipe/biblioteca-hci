@@ -1,0 +1,19 @@
+# Blueprint de publicação no Render (https://render.com).
+# Sobe a Biblioteca HCI como serviço web com disco persistente para o banco.
+services:
+  - type: web
+    name: biblioteca-hci
+    runtime: python
+    plan: starter            # necessário para ter disco persistente
+    region: oregon           # datacenter nos EUA (ver nota sobre Brasil no README)
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port $PORT --server.address 0.0.0.0 --server.headless true
+    envVars:
+      - key: BIBLIOTECA_SENHA   # senha única de acesso; defina o valor no painel do Render
+        sync: false
+      - key: BIBLIOTECA_DB      # aponta o banco para o disco persistente
+        value: /var/data/biblioteca.db
+    disk:
+      name: dados
+      mountPath: /var/data
+      sizeGB: 1

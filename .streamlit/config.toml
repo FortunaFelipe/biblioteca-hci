@@ -1,0 +1,8 @@
+# Tema base alinhado ao Brandbook HCI Advisors.
+# Cores de marca: azul #182845, dourado #E0AD55 (acento), cinza-azulado #5F657F.
+[theme]
+base = "light"
+primaryColor = "#E0AD55"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F5F7"
+textColor = "#182845"
