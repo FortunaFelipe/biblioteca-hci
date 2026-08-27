@@ -140,6 +140,8 @@ uma segunda pessoa responsável pela biblioteca.
 - **Banco gratuito persistente:** Turso (libSQL), preservando o modelo SQLite e
   as consultas existentes. Configurar `TURSO_DATABASE_URL` e
   `TURSO_AUTH_TOKEN` nos Secrets do Streamlit.
+- **Aplicativo publicado:** `https://biblioteca-hci.streamlit.app/`, usando
+  Python 3.12 no Streamlit Community Cloud.
 
 ### Residência de dados
 
@@ -168,14 +170,15 @@ uma segunda pessoa responsável pela biblioteca.
   coletadas, consultadas nem exibidas** (ficam sempre vazias). Elas permanecem
   apenas no schema para manter compatibilidade com bancos já criados.
 
-### Pendências para concluir o primeiro deploy
+### Primeiro deploy concluído em 27/08/2026
 
-1. Criar/acessar a conta do Turso e importar `data/biblioteca.db`.
-2. Obter a URL e o token do banco.
-3. Criar/acessar a conta do Streamlit Community Cloud conectada ao GitHub.
-4. Configurar `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` e `BIBLIOTECA_SENHA` nos
-   Secrets do aplicativo.
-5. Publicar, testar o link e compartilhá-lo com a segunda pessoa responsável.
+- Banco local importado no Turso, no grupo `biblioteca-hci`, região AWS US East
+  (Virginia).
+- Aplicativo publicado no Streamlit Community Cloud com Python 3.12.
+- `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` e `BIBLIOTECA_SENHA` configurados nos
+  Secrets do aplicativo.
+- Link e senha devem ser compartilhados somente com as pessoas responsáveis
+  pela biblioteca.
 
 ## Git
 

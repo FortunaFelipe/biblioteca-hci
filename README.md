@@ -61,6 +61,8 @@ Quando duas pessoas precisarem registrar movimentações por um link, a configur
 - **Banco persistente:** Turso, compatível com o modelo SQLite atual.
 - **Acesso:** uma senha compartilhada entre as pessoas responsáveis.
 
+O aplicativo publicado está em [biblioteca-hci.streamlit.app](https://biblioteca-hci.streamlit.app/).
+
 O aplicativo continua usando SQLite normalmente quando executado no computador. No ambiente publicado, ele ativa automaticamente o Turso quando encontra `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN` nos Secrets do Streamlit.
 
 ### Configuração
@@ -68,8 +70,9 @@ O aplicativo continua usando SQLite normalmente quando executado no computador. 
 1. Crie um banco no Turso importando `data/biblioteca.db`, para preservar os registros existentes.
 2. Obtenha a URL e um token de acesso do banco.
 3. Em [share.streamlit.io](https://share.streamlit.io), crie um aplicativo usando este repositório, a branch `main` e o arquivo `app.py`.
-4. Em **Advanced settings > Secrets**, configure os três valores mostrados em `.streamlit/secrets.toml.example`.
-5. Publique e compartilhe a URL e a senha somente com as pessoas responsáveis pela biblioteca.
+4. Em **Advanced settings**, selecione **Python 3.12**. O driver `libsql` usado para acessar o Turso não deve ser publicado com Python 3.14.
+5. Em **Advanced settings > Secrets**, configure os três valores mostrados em `.streamlit/secrets.toml.example`.
+6. Publique e compartilhe a URL e a senha somente com as pessoas responsáveis pela biblioteca.
 
 As credenciais reais nunca devem ser adicionadas ao GitHub. O Streamlit guarda esses valores separadamente nos Secrets do aplicativo.
 
