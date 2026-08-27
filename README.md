@@ -1,16 +1,19 @@
 # Biblioteca HCI
 
 Sistema local para controlar os livros do endomarketing que ficam disponíveis para empréstimo no escritório.
+Foi pensado para ser operado por uma pessoa responsável, sem contas de usuário e sem cadastro prévio dos assessores.
 
 ## O que controla
 
 - Cadastro de livros da biblioteca.
-- Cadastro de colaboradores.
-- Registro de empréstimos.
+- Registro de empréstimos informando apenas o nome completo do assessor.
 - Registro de devoluções.
 - Contagem automática de dias com o livro.
 - Painel com livros disponíveis, emprestados e maior empréstimo em aberto.
 - Histórico exportável em CSV.
+- Backup local do banco de dados.
+
+Não existe prazo fixo de devolução. A contagem de dias serve apenas para acompanhar há quanto tempo cada livro está fora do acervo.
 
 ## Como executar
 
@@ -34,12 +37,41 @@ http://localhost:8501
 
 ## Como usar
 
-1. Cadastre os livros em `Livros`.
-2. Cadastre os colaboradores em `Colaboradores`.
-3. Quando alguém retirar um livro, registre em `Novo empréstimo`.
-4. Quando o livro voltar, registre em `Devolução`.
-5. Use `Painel` para ver com quem está cada livro.
-6. Use `Histórico` para consultar ou baixar as movimentações.
+1. Cadastre os livros em `Acervo`.
+2. Quando alguém retirar um livro, registre em `Registrar empréstimo` e informe o nome completo do assessor.
+3. Quando o livro voltar, registre em `Registrar devolução`.
+4. Use `Visão geral` para ver com quem está cada livro e há quantos dias.
+5. Use `Histórico` para consultar, filtrar ou baixar as movimentações.
+
+O nome informado no primeiro empréstimo é reaproveitado automaticamente nas próximas movimentações. Não é necessário criar uma conta ou preencher um cadastro separado.
+
+## Modelo de operação local
+
+- Uma pessoa fica como ponto focal da Biblioteca HCI.
+- O sistema pode ser aberto apenas quando houver uma retirada, uma devolução ou uma consulta.
+- O computador não precisa permanecer ligado durante todo o dia.
+- Fechar o navegador ou desligar o computador não apaga os registros.
+- O arquivo do banco deve continuar no computador principal; mantenha cópias de backup em uma pasta segura da empresa.
+
+## Publicar para mais de uma pessoa responsável
+
+Quando duas pessoas precisarem registrar movimentações por um link, a configuração recomendada é:
+
+- **Interface:** Streamlit Community Cloud.
+- **Banco persistente:** Turso, compatível com o modelo SQLite atual.
+- **Acesso:** uma senha compartilhada entre as pessoas responsáveis.
+
+O aplicativo continua usando SQLite normalmente quando executado no computador. No ambiente publicado, ele ativa automaticamente o Turso quando encontra `TURSO_DATABASE_URL` e `TURSO_AUTH_TOKEN` nos Secrets do Streamlit.
+
+### Configuração
+
+1. Crie um banco no Turso importando `data/biblioteca.db`, para preservar os registros existentes.
+2. Obtenha a URL e um token de acesso do banco.
+3. Em [share.streamlit.io](https://share.streamlit.io), crie um aplicativo usando este repositório, a branch `main` e o arquivo `app.py`.
+4. Em **Advanced settings > Secrets**, configure os três valores mostrados em `.streamlit/secrets.toml.example`.
+5. Publique e compartilhe a URL e a senha somente com as pessoas responsáveis pela biblioteca.
+
+As credenciais reais nunca devem ser adicionadas ao GitHub. O Streamlit guarda esses valores separadamente nos Secrets do aplicativo.
 
 ## Dados
 
@@ -51,33 +83,3 @@ data/biblioteca.db
 
 Faça backup desse arquivo periodicamente, pois ele contém todos os cadastros e movimentações.
 Na barra lateral há o botão **Backup do banco (.db)** para baixar uma cópia a qualquer momento.
-
-## Publicar online (Render)
-
-Para os assessores acessarem por um link, sem manter um computador ligado, a forma mais
-simples é o [Render](https://render.com). O projeto já inclui o arquivo `render.yaml`, que
-configura tudo (inclusive um **disco persistente**, para o banco não se perder a cada deploy).
-
-Passo a passo:
-
-1. Suba este projeto para um repositório no GitHub (pode ser privado).
-2. No Render, clique em **New > Blueprint** e selecione o repositório. Ele lê o `render.yaml`.
-3. Quando pedir, defina a variável **`BIBLIOTECA_SENHA`** com a senha única que os assessores
-   vão usar para entrar. (A `BIBLIOTECA_DB` já vem preenchida.)
-4. Conclua a criação. Ao final, o Render dá uma URL pública (ex.: `https://biblioteca-hci.onrender.com`).
-5. Compartilhe a URL e a senha com os assessores. Todos usam a **mesma senha** — não é preciso
-   cadastrar e-mail de ninguém.
-
-Observações:
-
-- O plano com disco persistente é pago (a partir de ~US$ 7/mês). Ele é necessário: nos planos
-  gratuitos o arquivo do banco é apagado a cada reinício, o que faria perder os registros.
-- Atualizar o sistema é só dar `git push`; o Render publica a nova versão e mantém o banco.
-- **Backup:** o disco do Render não tem backup automático. Baixe o `.db` pelo botão da barra
-  lateral de tempos em tempos e guarde em local seguro da empresa.
-- **Dados no Brasil:** o `render.yaml` usa datacenter nos EUA. Se houver exigência de manter os
-  dados no Brasil, dá para usar outro provedor com região em São Paulo (ex.: Fly.io `gru`) —
-  avise que ajusto a configuração.
-
-Para rodar localmente, o app continua funcionando normalmente sem definir nenhuma dessas
-variáveis (sem senha e usando `data/biblioteca.db`).

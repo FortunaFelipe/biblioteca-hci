@@ -109,15 +109,15 @@ Quando o sistema entrar em uso, o arquivo `data/biblioteca.db` passa a conter os
 - Usar o dourado como acento, não como cor dominante.
 - Preservar uma aparência corporativa, limpa e leve, com bastante branco e azul como base.
 
-## Publicação / hospedagem (decisão pendente)
+## Publicação / hospedagem
 
-Esta seção registra o que foi decidido e o que ficou em aberto sobre publicar o
-sistema. Nada de hospedagem deve ser executado sem o usuário retomar o assunto.
+O usuário retomou a publicação em 27/08/2026 para compartilhar o controle com
+uma segunda pessoa responsável pela biblioteca.
 
 ### Requisitos do usuário
 
-- Publicar online para os assessores acessarem por um **link** (não manter um
-  computador ligado no escritório).
+- Publicar online para as pessoas responsáveis acessarem por um **link** (não
+  manter um computador ligado no escritório).
 - O **deploy é feito pelo próprio usuário** (sem TI).
 - O **mais simples possível** e **sem custos** ($0).
 - **Sem informação sensível do assessor: somente o nome.**
@@ -131,25 +131,15 @@ sistema. Nada de hospedagem deve ser executado sem o usuário retomar o assunto.
   camada gratuita**. Não há como persistir os empréstimos de graça só com o
   arquivo local no host gratuito.
 
-### Caminho preferido (gratuito) — a confirmar
+### Caminho escolhido (gratuito)
 
 - **Host:** Streamlit Community Cloud (grátis, publica direto de um repositório
   GitHub, sem máquina ligada).
 - **Acesso:** senha única compartilhada (sem cadastrar e-mail de assessor). Já
   implementado no app (ver abaixo).
-- **Banco gratuito persistente:** decisão pendente entre:
-  - **Turso (libSQL):** mantém o código SQLite praticamente igual (menor
-    mudança). Configurar conta + URL/token nos secrets do Streamlit.
-  - **Google Sheets:** os dados viram uma planilha do próprio usuário (visível e
-    já servindo de backup), mas exige conta de serviço Google e uma reescrita
-    maior da camada de dados.
-
-### Opção paga (descartada por ora, mas documentada)
-
-- **Render** com disco persistente (a partir de ~US$ 7/mês). Guardada caso o
-  projeto evolua para algo mais robusto. O arquivo `render.yaml` já existe e a
-  seção "Publicar online (Render)" do `README.md` descreve esse caminho pago —
-  revisar/atualizar quando o caminho gratuito for escolhido.
+- **Banco gratuito persistente:** Turso (libSQL), preservando o modelo SQLite e
+  as consultas existentes. Configurar `TURSO_DATABASE_URL` e
+  `TURSO_AUTH_TOKEN` nos Secrets do Streamlit.
 
 ### Residência de dados
 
@@ -157,32 +147,35 @@ sistema. Nada de hospedagem deve ser executado sem o usuário retomar o assunto.
   do Brasil. Se houver exigência de manter no Brasil, considerar Fly.io região
   São Paulo (`gru`) ou a nuvem da própria empresa (custo extra).
 
-### Já implementado no código (serve para qualquer host)
+### Já implementado no código
 
 - **Senha única** via `BIBLIOTECA_SENHA` (variável de ambiente **ou** secret do
   Streamlit), em `require_password()` / `get_setting()`. Sem essa variável o app
   abre direto (uso local inalterado).
-- **Caminho do banco configurável** via `BIBLIOTECA_DB` (para apontar a um disco
-  persistente). Default local inalterado (`data/biblioteca.db`).
-- **Botão "Backup do banco (.db)"** na barra lateral.
-- `render.yaml` (blueprint do Render) e `.streamlit/config.toml` (tema da marca).
+- **Conexão híbrida:** SQLite local por padrão e Turso quando URL/token estão
+  configurados.
+- **Caminho do SQLite configurável** via `BIBLIOTECA_DB`. Default local
+  inalterado (`data/biblioteca.db`).
+- **Botão "Backup do banco (.db)"** na barra lateral durante o uso local.
+- `.streamlit/secrets.toml.example` com os nomes das configurações, sem valores
+  reais.
+- `README.md` com o fluxo de publicação no Streamlit Community Cloud.
 
 ### Privacidade do modelo de dados
 
 - Guardar **somente o nome** do colaborador. As colunas `email` e `department`
   em `collaborators` existem por compatibilidade histórica, mas **não são
-  coletadas nem exibidas** (ficam sempre vazias). Recomendação: removê-las das
-  consultas para deixar "só o nome" literal e **não** passar a coletar dados
-  sensíveis. (Ainda não feito, para não alterar comportamento agora.)
+  coletadas, consultadas nem exibidas** (ficam sempre vazias). Elas permanecem
+  apenas no schema para manter compatibilidade com bancos já criados.
 
-### Pendências quando retomar
+### Pendências para concluir o primeiro deploy
 
-1. Escolher o banco gratuito (Turso x Google Sheets).
-2. Implementar a conexão escolhida (ajustar `connect_db` / camada de dados).
-3. Criar o repositório no GitHub (o projeto ainda não tem commits) e conectá-lo
-   ao Streamlit Community Cloud.
-4. Definir a senha em `secrets` (`BIBLIOTECA_SENHA`).
-5. Revisar a seção de publicação do `README.md` (hoje descreve só o Render pago).
+1. Criar/acessar a conta do Turso e importar `data/biblioteca.db`.
+2. Obter a URL e o token do banco.
+3. Criar/acessar a conta do Streamlit Community Cloud conectada ao GitHub.
+4. Configurar `TURSO_DATABASE_URL`, `TURSO_AUTH_TOKEN` e `BIBLIOTECA_SENHA` nos
+   Secrets do aplicativo.
+5. Publicar, testar o link e compartilhá-lo com a segunda pessoa responsável.
 
 ## Git
 
